@@ -12,8 +12,8 @@
         double Armor {get; set; }
         double PhysicResist {get; set;}
         double GivingExp {get; set;}
-        ExpSystem ExpSystem {get; set;}
-        void TakeDamage(double dmg, int t, GameObject g);
+        //ExpSystem ExpSystem {get; set;}
+        void TakeDamage(double dmg, int type, GameObject who);
         void Deas();
         void RegenHP();
         void UpgradeStats();

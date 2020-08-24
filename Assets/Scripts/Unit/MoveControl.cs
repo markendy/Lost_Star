@@ -8,61 +8,61 @@ public class MoveControl : MonoBehaviour
     public Action MoveRightHendler;
     public Action MoveLeftHendler;
     public Action MoveStopHendler;
-    private Hero hero;
-    private float moveInput = 0f;
-    private bool facingR = true;
-    private bool isGrounded;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private float checkRadius;
-    [SerializeField] private LayerMask whatIsGround;
-    private Rigidbody2D rigidbody;
+    private Hero _hero;
+    private float _moveInput = 0f;
+    private bool _facingR = true;
+    private bool _isGrounded;
+    [SerializeField] private Transform _groundCheck;
+    [SerializeField] private float _checkRadius;
+    [SerializeField] private LayerMask _whatIsGround;
     private int extraJump;
     public int extraJumpValue;
-    [SerializeField] private Animator animator;
-    private int isR = 0;
-    private bool isJ = false;
-    private float deltaMove = 0;
+    private Rigidbody2D _rigidbody;
+    [SerializeField] private Animator _animator;
+    private int _isRightDirection = 0;
+    private bool _isJump = false;
+    private float _deltaMoveInFrame = 0;
     private void Start()
     {
-        isR = 0;
-        isJ = false;
-        deltaMove = 0;
-        moveInput = 0f;
-        hero = GetComponent<Hero>();
+        _isRightDirection = 0;
+        _isJump = false;
+        _deltaMoveInFrame = 0;
+        _moveInput = 0f;
+        _hero = GetComponent<Hero>();
         extraJump = extraJumpValue;
-        rigidbody = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
     {
-        if (isR == 1)
+        if (_isRightDirection == 1)
         {
             RightButtonDown();
         }
-        if (isR == -1)
+        if (_isRightDirection == -1)
         {
             LeftButtonDown();
         }
-        if (isR == 0)
+        if (_isRightDirection == 0)
         {
             StopButtonDown();
         }
-        if (!facingR && moveInput > 0)
+        if (!_facingR && _moveInput > 0)
         {
             Flip();
         }
-        else if (facingR && moveInput < 0)
+        else if (_facingR && _moveInput < 0)
         {
             Flip();
         }
-        if (moveInput == 0)
+        if (_moveInput == 0)
         {
-            animator.SetBool("isRunning", false);
+            _animator.SetBool("_isRightDirectionunning", false);
         }
         else
         {
-            animator.SetBool("isRunning", true);
+            _animator.SetBool("_isRightDirectionunning", true);
         }
     }
     private void Update()
@@ -72,25 +72,29 @@ public class MoveControl : MonoBehaviour
 
     private void JumpControl()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatIsGround);
-        if (isGrounded)
+        _isGrounded = Physics2D.OverlapCircle(_groundCheck.position, _checkRadius, _whatIsGround);
+        if (_isGrounded)
         {
-            animator.SetBool("isJumping", false);
+            _animator.SetBool("_isJumpumping", false);
         }
-        if (isJ)
+        if (_isJump)
         {
-            isJ = false;
-            if (isGrounded)
+            _isJump = false;
+            if (_isGrounded)
             {
                 extraJump = extraJumpValue;
-                rigidbody.velocity = Vector2.up * hero.JumpForce;
-                animator.SetBool("isJumping", true);
+                _rigidbody.velocity = Vector2.up * _hero.JumpForce;
+                _animator.SetBool("_isJumpumping", true);
+                if (JumpHendler != null)
+                    JumpHendler();
             }
-            else if (!isGrounded && extraJump > 0)
+            else if (!_isGrounded && extraJump > 0)
             {
-                rigidbody.velocity = Vector2.up * hero.JumpForce;
+                _rigidbody.velocity = Vector2.up * _hero.JumpForce;
                 --extraJump;
-                animator.SetBool("isJumping", true);
+                _animator.SetBool("_isJumpumping", true);
+                if (JumpHendler != null)
+                    JumpHendler();
             }
         }
         if (extraJump < 0)
@@ -100,42 +104,42 @@ public class MoveControl : MonoBehaviour
     }
     private void CreateVector(int v)
     {
-        moveInput = moveInput + 1.5f * v * Time.deltaTime;
-        if (moveInput > 1)
+        _moveInput = _moveInput + 1.5f * v * Time.deltaTime;
+        if (_moveInput > 1)
         {
-            moveInput = 1;
+            _moveInput = 1;
         }
-        else if (moveInput < -1)
+        else if (_moveInput < -1)
         {
-            moveInput = -1;
+            _moveInput = -1;
         }
     }
     private void InVector0()
     {
-        if (moveInput == 0)
+        if (_moveInput == 0)
         {
-            deltaMove = 0;
+            _deltaMoveInFrame = 0;
         }
         else
         {
-            if (deltaMove == 0)
+            if (_deltaMoveInFrame == 0)
             {
-                deltaMove = Math.Abs(moveInput) / 20f;
+                _deltaMoveInFrame = Math.Abs(_moveInput) / 20f;
             }
-            if (moveInput < 0)
+            if (_moveInput < 0)
             {
-                moveInput += deltaMove;
-                if (moveInput > 0)
+                _moveInput += _deltaMoveInFrame;
+                if (_moveInput > 0)
                 {
-                    moveInput = 0;
+                    _moveInput = 0;
                 }
             }
-            else if (moveInput > 0)
+            else if (_moveInput > 0)
             {
-                moveInput -= deltaMove;
-                    if (moveInput < 0)
+                _moveInput -= _deltaMoveInFrame;
+                    if (_moveInput < 0)
                     {
-                        moveInput = 0;
+                        _moveInput = 0;
                     }
             }
             CreateVector(0);
@@ -143,41 +147,44 @@ public class MoveControl : MonoBehaviour
     }
     public void DoJump()
     {
-        isJ = true;
+        _isJump = true;
     }
     public void EndMove()
     {
-        isR = 0;
+        _isRightDirection = 0;
     }
     public void MoveLeft()
     {
-        isR = -1;
+        _isRightDirection = -1;
     }
     public void MoveRight()
     {
-        isR = 1;
+        _isRightDirection = 1;
     }
     private void StopButtonDown()
     {
         InVector0();
-        rigidbody.velocity = new Vector2(moveInput * hero.Speed, rigidbody.velocity.y);
-        MoveStopHendler();
+        _rigidbody.velocity = new Vector2(_moveInput * _hero.Speed, _rigidbody.velocity.y);
+        if (MoveStopHendler != null)
+            MoveStopHendler();
     }
     private void LeftButtonDown()
     {
         CreateVector(-1);
-        rigidbody.velocity = new Vector2(moveInput * hero.Speed, rigidbody.velocity.y);
-        MoveLeftHendler();
+        _rigidbody.velocity = new Vector2(_moveInput * _hero.Speed, _rigidbody.velocity.y);
+        if (MoveLeftHendler != null)
+            MoveLeftHendler();
     }
     private void RightButtonDown()
     {
         CreateVector(1);
-        rigidbody.velocity = new Vector2(moveInput * hero.Speed, rigidbody.velocity.y);
-        MoveRightHendler();
+        _rigidbody.velocity = new Vector2(_moveInput * _hero.Speed, _rigidbody.velocity.y);
+        if (MoveRightHendler != null)
+            MoveRightHendler();
     }
     private void Flip()
     {
-        facingR = !facingR;
+        _facingR = !_facingR;
         Vector3 Scaler = transform.localScale;
         Scaler.x *= -1;
         transform.localScale = Scaler;

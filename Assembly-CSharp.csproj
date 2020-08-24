@@ -36,30 +36,12 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\ScriptsOLD\UI\ParalaxCam\ParallaxCamera.cs" />
-     <Compile Include="Assets\ScriptsOLD\Systems\BufSystem.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\IronSword.cs" />
-     <Compile Include="Assets\ScriptsOLD\Enemy\AttackSystemE.cs" />
-     <Compile Include="Assets\ScriptsOLD\UI\StatsPanel.cs" />
-     <Compile Include="Assets\ScriptsOLD\Enemy\Enemy_Skeleton.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\Bonus\BasicBonus\CBasicBonus.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\Bonus\BasicBonus\Vampire.cs" />
-     <Compile Include="Assets\ScriptsOLD\Enemy\TEMP_RadianceDamage.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\Bonus\IronSwordBonus.cs" />
-     <Compile Include="Assets\ScriptsOLD\UI\HealPanel.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\CWeapon.cs" />
-     <Compile Include="Assets\ScriptsOLD\UI\ParalaxCam\ParallaxLayer.cs" />
-     <Compile Include="Assets\ScriptsOLD\UI\ParalaxCam\ParallaxBackground.cs" />
-     <Compile Include="Assets\ScriptsOLD\Hero\InventoryControl.cs" />
-     <Compile Include="Assets\ScriptsOLD\Systems\ExpSystem.cs" />
-     <Compile Include="Assets\ScriptsOLD\UI\CamFolow.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\Bonus\CBonus.cs" />
-     <Compile Include="Assets\ScriptsOLD\Hero\AttackSystem.cs" />
-     <Compile Include="Assets\ScriptsOLD\Weapons\Bonus\BasicBonus\AdditionalDamage.cs" />
      <Compile Include="Assets\Scripts\Unit\MoveControl.cs" />
+     <Compile Include="Assets\Scripts\UI\HealPanelControl.cs" />
      <Compile Include="Assets\Scripts\Unit\Unit.cs" />
      <Compile Include="Assets\Scripts\Unit\IUnit.cs" />
      <Compile Include="Assets\Scripts\Unit\Hero.cs" />
+     <Compile Include="Assets\Scripts\UI\PanelControl.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.0f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

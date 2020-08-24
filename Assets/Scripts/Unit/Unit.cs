@@ -1,66 +1,95 @@
 ﻿using UnityEngine;
 using LostStar;
+using System;
 public class Unit : MonoBehaviour, IUnit
 {
-    public double heals = 1;
+    public Action<Unit, Unit[]> TakeDamageHendler;
+    public Action DeadHendler;
+    public Action DeltaHPHendler;
+    public Action DeltaEXPHendler;
+
+
+    [SerializeField] private double _heals = 1;
     public double Heals
     {
-        get => heals;
+        get => _heals;
         set
         {
-            if (value <= 0){
-                //Deas();
-                heals = value;
+            if(DeltaHPHendler != null)
+                DeltaHPHendler();
+            if (value <= 0)
+            {
+                Deas();
+                _heals = 0;
             }
             else if (value > MaxHeals)
             {
-                heals = MaxHeals;
+                _heals = MaxHeals;
             }
-            else { heals = value; }
+            else { _heals = value; }//revorc in %
         }
     }
-    public double maxHeals = 1;
+    [SerializeField] private double _maxHeals = 1;
     public double MaxHeals
     {
-        get => maxHeals;
+        get => _maxHeals;
         set
         {
-            if (maxHeals <= 0) maxHeals = 100;
-            if(maxHeals == heals){
-                maxHeals = value;
-                heals = maxHeals;
+            if (_maxHeals <= 0) _maxHeals = 100;
+            if (_maxHeals == _heals)
+            {
+                _maxHeals = value;
+                _heals = _maxHeals;
             }
-            else { maxHeals = value; }
+            else 
+            { 
+                double procentTemp = Heals / _maxHeals;
+                _maxHeals = value; 
+                Heals = procentTemp * _maxHeals;
+            }
         }
     }
-    public double regenHeals = 1;
-    public double RegenHeals { get => regenHeals; set { if (regenHeals < 0) regenHeals = 0; else { regenHeals = value; } } }
-    public double damage = 1;
-    public double Damage { get => damage; set { if (damage < 0) damage = 0; else { damage = value; } } }
-    public float speed = 1f;
-    public float Speed { get => speed; set { if (speed <= 0) speed = 0.1f; else { speed = value; } } }
-    public float jumpForce = 1f;
-    public float JumpForce { get => jumpForce; set { if (jumpForce <= 0) jumpForce = 0.1f; else { jumpForce = value; } } }
-    public float attackRange = 1f;
-    public float AttackRange { get => attackRange; set { if (attackRange <= 0) attackRange = 0.1f; else { attackRange = value; } } }
-    public double armor;
-    public double Armor { get => armor; set { armor = value; } }
-    public double physicResist;
-    public double PhysicResist { get => physicResist = (0.05 * Armor) / (1 + 0.05 * Armor); set { physicResist = value; } }
-    public ExpSystem expSystem;
-    public ExpSystem ExpSystem { get => expSystem; set { expSystem = value; } }
-    public double givingExp;
-    public double GivingExp { get => givingExp; set { givingExp = value; } }
-    void FixedUpdate()
+    [SerializeField] private double _regenHeals = 1;
+    public double RegenHeals { get => _regenHeals; set { if (_regenHeals < 0) _regenHeals = 0; else { _regenHeals = value; } } }
+
+
+    [SerializeField] private double _damage = 1;
+    public double Damage { get => _damage; set { if (_damage < 0) _damage = 0; else { _damage = value; } } }
+
+
+    [SerializeField] private float _speed = 1f;
+    public float Speed { get => _speed; set { if (_speed <= 0) _speed = 0.1f; else { _speed = value; } } }
+    [SerializeField] private float _jumpForce = 1f;
+    public float JumpForce { get => _jumpForce; set { if (_jumpForce <= 0) _jumpForce = 0.1f; else { _jumpForce = value; } } }
+
+
+    [SerializeField] private float _attackRange = 1f;
+    public float AttackRange { get => _attackRange; set { if (_attackRange <= 0) _attackRange = 0.1f; else { _attackRange = value; } } }
+
+
+    [SerializeField] private double _armor;
+    public double Armor { get => _armor; set { _armor = value; } }
+    [SerializeField] private double _physicResist;
+    public double PhysicResist { get => _physicResist = (0.05 * Armor) / (1 + 0.05 * Armor); set { _physicResist = value; } }
+
+
+    //[SerializeField] private ExpSystem _expSystem;
+    //public ExpSystem ExpSystem { get => _expSystem; set { _expSystem = value; } }
+    [SerializeField] private double _givingExp;
+    public double GivingExp { get => _givingExp; set { _givingExp = value; } }
+
+
+    private void FixedUpdate()
     {
         RegenHP();
         PhysicResist = PhysicResist;// UPDATE RESIST
     }
-    public virtual void Start(){
-        ExpSystem = GetComponent<ExpSystem>();
+    protected virtual void Start()
+    {
+        //ExpSystem = GetComponent<ExpSystem>();
         Init();
     }
-    public virtual void Init()
+    protected virtual void Init()
     {
         MaxHeals = 100;
         Heals = MaxHeals;
@@ -70,7 +99,7 @@ public class Unit : MonoBehaviour, IUnit
         JumpForce = 4.5f;
         AttackRange = 0.15f;
         Armor = 5;
-//        GivingExp = 50*(ExpSystem.lvl+1);
+        //        GivingExp = 50*(ExpSystem.lvl+1);
     }
     public virtual void Deas()
     {
@@ -87,10 +116,11 @@ public class Unit : MonoBehaviour, IUnit
         {
             case 1://PHYSICS
                 Heals -= dmg * (1 - PhysicResist);
-                if(Heals < 0){
-                    ktodmg.GetComponent<Unit>().ExpSystem.Exp += GetComponent<Unit>().GivingExp;
+                /*if (Heals < 0)
+                {
+                    //ktodmg.GetComponent<Unit>().ExpSystem.Exp += GetComponent<Unit>().GivingExp;
                     Deas();
-                }
+                }*/
                 break;
             case 2://MAGIC
                 break;
@@ -99,11 +129,16 @@ public class Unit : MonoBehaviour, IUnit
                 break;
         }
     }
-    public void UpgradeStats(){
-        MaxHeals += 25 * ExpSystem.lvl;
+    //TEMP
+    public void TESTGiveDamage(){
+        TakeDamage(50 + MaxHeals * 0.3, 1, gameObject);
+    }
+    public void UpgradeStats()
+    {
+        MaxHeals += 25;// * ExpSystem.lvl;
         Damage *= 1.06;
         Speed *= 1.005f;
-        RegenHeals *= 1.07;// * expSystem.lvl;
+        RegenHeals *= 1.07;// * _expSystem.lvl;
     }
     //void OnTriggerEnter
 }
